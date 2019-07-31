@@ -14,6 +14,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +25,10 @@ import androidx.palette.graphics.Palette;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.format.DateFormat;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
@@ -111,6 +115,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private float mCenterY;
 
         private int mClockColor = Color.WHITE;
+        private int mAccentColor = Color.GREEN;
+
         /*private int mSecondColor = Color.LTGRAY;
         private int mThirdColor = Color.GRAY;*/
 
@@ -123,6 +129,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private Paint mHourPaint;
         private Paint mMinutePaint;
         private Paint mSecondPaint;
+        private Paint mBatteryPaint;
+        private Paint mAccentPaint;
 
         //private Paint mClockThirdPaint;
         //private Paint mTickAndCirclePaint;
@@ -132,6 +140,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean mAmbient;
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
+
+        private BatteryManager bm;
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -145,6 +155,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
             initializeBackground();
             initializeWatchFace();
+
+            //
+            bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+
+
         }
 
         private void initializeBackground() {
@@ -179,22 +194,38 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
             mClockPaint.setTextAlign(Paint.Align.CENTER);
 
-            mClockPaint.setTypeface(ResourcesCompat.getFont(getApplicationContext(), R.font.scifi_adventure));
+            Typeface font = ResourcesCompat.getFont(getApplicationContext(), R.font.scifi_adventure/*_monospace//*/);
+
+
+            mClockPaint.setTypeface(font);
 
             mHourPaint = new Paint();
             mMinutePaint = new Paint();
             mSecondPaint = new Paint();
-
+            mBatteryPaint = new Paint();
+            mAccentPaint = new Paint();
 
             mHourPaint.set(mClockPaint);
             //mHourPaint.setTextAlign(Paint.Align.RIGHT);
             mMinutePaint.set(mClockPaint);
-            mMinutePaint.setTextSize((int)(mHourPaint.getTextSize()*0.8));
+            //mMinutePaint.setTextSize((int)(mHourPaint.getTextSize()*0.8));
 
             mSecondPaint.set(mClockPaint);
-            mSecondPaint.setTextSize((int)(mMinutePaint.getTextSize()*0.8));
+            mSecondPaint.setTextSize((int)(mMinutePaint.getTextSize()*0.6));
+
+            mBatteryPaint.set(mClockPaint);
+            mBatteryPaint.setTextSize(15);
+
+            mAccentPaint.set(mClockPaint);
+            mAccentPaint.setColor(mAccentColor);
 
 
+
+
+            mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+            mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+            mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+            mBatteryPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
 
 
         }
@@ -245,11 +276,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mMinutePaint.setStyle(Paint.Style.STROKE);
 
 
-
-
-                /*mHourPaint.clearShadowLayer();
+                mHourPaint.clearShadowLayer();
                 mMinutePaint.clearShadowLayer();
-                mSecondPaint.clearShadowLayer();*/
+                mSecondPaint.clearShadowLayer();
+                mBatteryPaint.clearShadowLayer();//*/
 
 
             } else {
@@ -269,10 +299,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mMinutePaint.setStyle(Paint.Style.FILL);
 
 
-                /*mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);*/
+                mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+                mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+                mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+                mBatteryPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+                /*mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);*/
             }
         }
 
@@ -302,7 +333,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
              * entire screen, not just the usable portion.
              */
             mCenterX = width / 2f;
-            mCenterY = height / 2f;
+            mCenterY = height / 2f-20;
 
             /*
              * Calculate lengths of different hands based on watch screen size.
@@ -364,8 +395,23 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
                     // TODO: Add code to handle the tap gesture.
-                    Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-                            .show();
+                    /*Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
+                            .show();*/
+                    int xArea = 20, yArea = 20;
+
+                    if( x<mCenterX+xArea
+                        &&
+                        x>mCenterX-xArea
+                        &&
+                        y<yArea*2
+                        &&
+                        y>0){
+
+                        Toast.makeText(getApplicationContext(), "Tapped "+x+":"+y, Toast.LENGTH_SHORT)
+                                .show();
+
+                    }
+
                     break;
             }
             invalidate();
@@ -391,11 +437,15 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }*/
 
             canvas.drawColor(Color.BLACK);
+
+            /*canvas.drawLine(mCenterX,0,mCenterX,canvas.getHeight(),mAccentPaint);
+            canvas.drawLine(0,mCenterY,canvas.getWidth(),mCenterY,mAccentPaint);//*/
+
         }
 
         private void drawWatchFace(Canvas canvas) {
 
-            int yPos = (int) (mCenterY - ((mHourPaint.descent() + mHourPaint.ascent()) / 2));
+
 
             /*dd-MM-yyyy*/
 
@@ -405,17 +455,41 @@ public class MyWatchFace extends CanvasWatchFaceService {
             Log.d(TAG,String.format("M: %f; %f; %f;",mMinutePaint.getFontSpacing(),mMinutePaint.ascent(),mMinutePaint.descent()));
             Log.d(TAG,String.format("S: %f; %f; %f;",mSecondPaint.getFontSpacing(),mSecondPaint.ascent(),mSecondPaint.descent()));*/
 
-            canvas.drawText(DateFormat.format("HH", mCalendar).toString(),mCenterX,mCenterY-mHourPaint.descent(),mHourPaint);
+            Rect bounds = new Rect();
+            mHourPaint.getTextBounds("00",0,2,bounds);
 
+            //mClockPaint.setAlpha(40);
+
+            //canvas.drawRect(mCenterX-5-bounds.width()/2f,mCenterY-mHourPaint.getFontSpacing(),mCenterX+5+bounds.width()/2f,mCenterY+mMinutePaint.getFontSpacing(),mClockPaint);
+
+
+            canvas.drawText(DateFormat.format("HH", mCalendar).toString(),mCenterX,mCenterY-mHourPaint.descent(),mHourPaint);
 
             canvas.drawText(DateFormat.format("mm", mCalendar).toString(),mCenterX,mCenterY-mMinutePaint.ascent(),mMinutePaint);
 
             if(!mAmbient) {
                 //Log.d(TAG,"second");
                 canvas.drawText(DateFormat.format("ss", mCalendar).toString(), mCenterX, mCenterY + mMinutePaint.getFontSpacing() - mSecondPaint.ascent(), mSecondPaint);
+
+                int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                canvas.drawText(""+batLevel,mCenterX,canvas.getHeight()-15-mMinutePaint.descent(),mBatteryPaint);
             }
 
+
+
+
+            //float[] floats = new float[];
+
+
+
+            //canvas.drawRect(bounds,mAccentPaint);
+
+            //Log.d(TAG,""+bounds);
+
+
             //canvas.drawText(DateFormat.format("'H'HH'M'mm'S'ss", mCalendar).toString(),mCenterX,yPos,mClockFirstPaint);
+
+
 
 
         }
