@@ -4,13 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -18,25 +13,22 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
-import androidx.core.content.res.ResourcesCompat;
-import androidx.palette.graphics.Palette;
-
+import android.renderscript.Element;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.format.DateFormat;
-import android.text.style.TypefaceSpan;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
+import javax.sql.DataSource;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't
@@ -141,6 +133,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
 
+        private float[] mBatPts;
+        private Rect mBatRect;
+
         private BatteryManager bm;
 
         @Override
@@ -153,11 +148,15 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
             mCalendar = Calendar.getInstance();
 
+            //onSurfaceChanged(holder,);
+            
             initializeBackground();
             initializeWatchFace();
 
-            //
+            //Bat
             bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+
+
 
 
         }
@@ -220,13 +219,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mAccentPaint.setColor(mAccentColor);
 
 
-
-
             mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
             mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
             mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
             mBatteryPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
-
 
         }
 
@@ -327,6 +323,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
 
+
             /*
              * Find the coordinates of the center point on the screen, and ignore the window
              * insets, so that, on round watches with a "chin", the watch face is centered on the
@@ -334,6 +331,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
              */
             mCenterX = width / 2f;
             mCenterY = height / 2f-20;
+
+
+            createBatShape(width,height);
 
             /*
              * Calculate lengths of different hands based on watch screen size.
@@ -363,6 +363,44 @@ public class MyWatchFace extends CanvasWatchFaceService {
             /*if (!mBurnInProtection && !mLowBitAmbient) {
                 initGrayBackgroundBitmap();
             }*/
+        }
+
+        private void createBatShape(int width,int height){
+
+            Rect BatBounds = new Rect();
+            mBatteryPaint.getTextBounds("100",0,3,BatBounds);
+
+            BatBounds.offset((int)mCenterX-BatBounds.width()/2,(int)(height-15-mMinutePaint.descent()));
+
+            int offset = 5;
+            BatBounds.set(BatBounds.left-offset,BatBounds.top-offset,BatBounds.right+offset,BatBounds.bottom+offset);
+
+            mBatPts = new float[]{
+
+                    BatBounds.left,//x1
+                    BatBounds.top,//y1
+                    BatBounds.right,//x2
+                    BatBounds.top,//y2
+
+                    BatBounds.right,//x2
+                    BatBounds.top,//y2
+                    BatBounds.right,//x3
+                    BatBounds.bottom,//y3
+
+                    BatBounds.right,//x3
+                    BatBounds.bottom,//y3
+                    BatBounds.left,//x4
+                    BatBounds.bottom,//y4
+
+                    BatBounds.left,//x4
+                    BatBounds.bottom,//y4
+                    BatBounds.left,//x1
+                    BatBounds.top//y1
+
+            };
+
+            mBatRect = new Rect(BatBounds.right,BatBounds.top+8,BatBounds.right+5,BatBounds.bottom-8);
+
         }
 
         /*private void initGrayBackgroundBitmap() {
@@ -471,9 +509,36 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 //Log.d(TAG,"second");
                 canvas.drawText(DateFormat.format("ss", mCalendar).toString(), mCenterX, mCenterY + mMinutePaint.getFontSpacing() - mSecondPaint.ascent(), mSecondPaint);
 
+
+
+                //Bat
+
+                
+
+
+                canvas.drawLines(mBatPts, mBatteryPaint);
+                canvas.drawRect(mBatRect,mBatteryPaint);                
+
                 int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
                 canvas.drawText(""+batLevel,mCenterX,canvas.getHeight()-15-mMinutePaint.descent(),mBatteryPaint);
-            }
+
+
+
+                //step
+
+                /*float[] pts = new float[]{
+
+                        200,100,
+                        200,0,
+                        200,200,
+                        100,200
+
+                };
+                canvas.drawLines(pts, mAccentPaint);*/
+
+
+
+            }//if mAmbient
 
 
 
