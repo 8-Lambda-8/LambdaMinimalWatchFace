@@ -250,13 +250,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
             super.onAmbientModeChanged(inAmbientMode);
             mAmbient = inAmbientMode;
 
-            updateWatchHandStyle();
+            updateWatchStyle();
 
             /* Check and trigger whether or not timer should be running (only in active mode). */
             updateTimer();
         }
 
-        private void updateWatchHandStyle() {
+        private void updateWatchStyle() {
             if (mAmbient) {
                 //mHourPaint.setColor(Color.BLACK);
                 mHourPaint.setColor(mClockColorAmbiant);
@@ -523,7 +523,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 canvas.drawText(""+batLevel,mCenterX,canvas.getHeight()-15-mMinutePaint.descent(),mBatteryPaint);
 
 
-
+                //TODO Add Step count viewer
                 //step
 
                 /*float[] pts = new float[]{
@@ -536,6 +536,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 };
                 canvas.drawLines(pts, mAccentPaint);*/
 
+                //TODO Add Date
+
+                //TODO Add App Launcher
 
 
             }//if mAmbient
