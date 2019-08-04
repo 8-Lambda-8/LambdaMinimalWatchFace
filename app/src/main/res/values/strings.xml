@@ -3,4 +3,5 @@
     <string name="message">Watch face tapped</string>
     <string name="my_watch_name">Lambda Minimal</string>
     <string name="time_format">H%dM%dS%d</string>
+    <string name="config_activity_name">ConfigActivity</string>
 </resources>

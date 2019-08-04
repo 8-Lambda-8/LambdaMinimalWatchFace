@@ -157,6 +157,25 @@ public class MyWatchFace extends CanvasWatchFaceService {
             bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
 
 
+            /*//steps
+            final DataSource ds = new DataSource.Builder()
+                    .setAppPackageName("com.google.android.gms")
+                    .setDataType(Element.DataType.TYPE_STEP_COUNT_DELTA)
+                    .setType(DataSource.TYPE_DERIVED)
+                    .setStreamName("estimated_steps")
+                    .build();
+
+            final DataReadRequest req = new DataReadRequest.Builder()
+                    .aggregate(ds, Element.DataType.AGGREGATE_STEP_COUNT_DELTA)
+                    .bucketByTime(1, TimeUnit.DAYS)
+                    .setTimeRange(timeBounds[0], timeBounds[1], TimeUnit.MILLISECONDS)
+                    .build();
+
+            DataReadRequest readreq = new DataReadRequest.Builder()
+                    .addAggregatedDefaultDataSource(DataTypes.STEP_COUNT_DELTA)
+                    .bucketByTime(1, TimeUnit.DAYS)
+                    .setTimeRange(startTime, endTime)
+                    .build();*/
 
 
         }
