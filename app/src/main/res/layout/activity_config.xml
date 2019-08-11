@@ -66,12 +66,13 @@
             android:text="Select outline color:" />
 
         <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:checkedButton="@id/radioButton_green"
-        android:gravity="center"
-        android:orientation="horizontal">
+            android:id="@+id/radioGroup_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checkedButton="@id/radioButton_green"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/radioButton_red"
@@ -83,13 +84,13 @@
                 android:id="@+id/radioButton_green"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/green"/>
+                android:buttonTint="@color/green" />
 
             <RadioButton
                 android:id="@+id/radioButton_blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/dark_blue"/>
+                android:buttonTint="@color/dark_blue" />
 
             <!--<RadioButton
                 android:id="@+id/radioButton_magenta"
@@ -108,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/"/>-->
-    </RadioGroup>
+        </RadioGroup>
 
     </LinearLayout>
 

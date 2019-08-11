@@ -1,17 +1,24 @@
 package com.a8lambda8.lambdaminimalwatchface;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.TAG;
+
 
 
 
@@ -20,6 +27,11 @@ import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.TAG;
  * Set App Launcher App
  */
 public class ConfigActivity extends WearableActivity {
+
+    public static final String MY_PREFS_NAME = "ConfigPrefs";
+
+    SharedPreferences SP;
+    SharedPreferences.Editor SP_E;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +42,31 @@ public class ConfigActivity extends WearableActivity {
 
         ImageButton ConfigRecyclerView = findViewById(R.id.btn_shortcut_edit);
 
+        SP = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+
+        SP_E = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
 
 
-        ConfigRecyclerView.setOnClickListener(new View.OnClickListener() {
+        RadioGroup radioGroup = findViewById(R.id.radioGroup_color);
+
+        ;
+
+        int outlineCol = SP.getInt("outlineColor",0);
+        switch(outlineCol) {
+            case Color.RED:
+                radioGroup.check(R.id.radioButton_red);
+                break;
+            case Color.GREEN:
+                radioGroup.check(R.id.radioButton_green);
+                break;
+            case Color.BLUE:
+                radioGroup.check(R.id.radioButton_blue);
+                break;
+        }
+
+
+
+            ConfigRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -48,6 +82,18 @@ public class ConfigActivity extends WearableActivity {
                 i.putExtra("AppList",(ArrayList<ResolveInfo>)pkgAppsList);
                 startActivityForResult(i, 1);
 
+            }
+        });
+
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton rb = findViewById(checkedId);
+
+                SP_E.putInt("outlineColor", Objects.requireNonNull(rb.getButtonTintList()).getDefaultColor());
+                SP_E.apply();
             }
         });
 
