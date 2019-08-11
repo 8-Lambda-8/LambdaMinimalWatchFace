@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-
-import androidx.wear.widget.WearableRecyclerView;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class ConfigActivity extends WearableActivity {
 
         //WearableRecyclerView ConfigRecyclerView = findViewById(R.id.config_rec_view);
 
-        Button ConfigRecyclerView = findViewById(R.id.btn_set_shortcut);
+        ImageButton ConfigRecyclerView = findViewById(R.id.btn_shortcut_edit);
 
 
 

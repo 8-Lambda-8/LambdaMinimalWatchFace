@@ -25,44 +25,89 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btn_set_shortcut"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:foregroundGravity="center"
-            android:text="Set App shortcut"
-            android:textAllCaps="false" />
+            android:text="Select Shortcut App:" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_shortcut"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_launcher" />
+
+            <ImageButton
+                android:id="@+id/btn_shortcut_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_edit" />
+
+            <ImageButton
+                android:id="@+id/btn_shortcut_remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_delete" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Select outline color:" />
 
         <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:checkedButton="@id/radioButton_red"
+        android:checkedButton="@id/radioButton_green"
         android:gravity="center"
         android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/radioButton_red"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="@dimen/screen_percentage_10"
-            android:buttonTint="@color/red"
-            android:textIsSelectable="false" />
+            <RadioButton
+                android:id="@+id/radioButton_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/red" />
 
-        <RadioButton
-            android:id="@+id/radioButton_green"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="@dimen/screen_percentage_10"
-            android:buttonTint="@color/green" />
+            <RadioButton
+                android:id="@+id/radioButton_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/green"/>
 
-        <RadioButton
-            android:id="@+id/radioButton_blue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="@dimen/screen_percentage_10"
-            android:buttonTint="@color/dark_blue" />
+            <RadioButton
+                android:id="@+id/radioButton_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dark_blue"/>
+
+            <!--<RadioButton
+                android:id="@+id/radioButton_magenta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/" />
+
+            <RadioButton
+                android:id="@+id/radioButton_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/yellow"/>
+
+            <RadioButton
+                android:id="@+id/radioButton_cyan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/"/>-->
     </RadioGroup>
 
     </LinearLayout>
