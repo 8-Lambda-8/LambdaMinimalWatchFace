@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,11 +14,11 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.renderscript.Element;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import javax.sql.DataSource;
+import static com.a8lambda8.lambdaminimalwatchface.ConfigActivity.MY_PREFS_NAME;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't
@@ -84,13 +85,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
     }
 
     private class Engine extends CanvasWatchFaceService.Engine {
-        private static final float FIRST_STROKE_WIDTH = 5f;
+        /*private static final float FIRST_STROKE_WIDTH = 5f;
         private static final float SECOND_STROKE_WIDTH = 3f;
         private static final float THIRD_STROKE_WIDTH = 2f;
 
-        private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
+        private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;*/
 
-        private static final int SHADOW_RADIUS = 6;
+        private static final int SHADOW_RADIUS = 8;
         /* Handler to update the time once a second in interactive mode. */
         private final Handler mUpdateTimeHandler = new EngineHandler(this);
         private Calendar mCalendar;
@@ -138,6 +139,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         private BatteryManager bm;
 
+        SharedPreferences SP;
+        //SharedPreferences.Editor SP_E;
+
+
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
@@ -149,6 +154,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mCalendar = Calendar.getInstance();
 
             //onSurfaceChanged(holder,);
+
+            //Shared Prefs
+            SP = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             
             initializeBackground();
             initializeWatchFace();
@@ -201,6 +209,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         private void initializeWatchFace() {
             /* Set defaults for colors */
+
+
+            mAccentColor = SP.getInt("outlineColor",0);
+            Log.d(TAG, "initializeWatchFace: col="+mAccentColor);
 
 
             mClockPaint = new Paint();

@@ -3,6 +3,7 @@ package com.a8lambda8.lambdaminimalwatchface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
@@ -11,16 +12,12 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.TAG;
-
-
-
 
 /**
  * Set Akkzent color
@@ -43,30 +40,44 @@ public class ConfigActivity extends WearableActivity {
         ImageButton ConfigRecyclerView = findViewById(R.id.btn_shortcut_edit);
 
         SP = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-
         SP_E = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
 
-
         RadioGroup radioGroup = findViewById(R.id.radioGroup_color);
+        RadioButton rb_red = findViewById(R.id.radioButton_red);
+        RadioButton rb_green = findViewById(R.id.radioButton_green);
+        RadioButton rb_blue = findViewById(R.id.radioButton_blue);
 
-        ;
+
+        rb_red.setButtonTintList(ColorStateList.valueOf(Color.RED));
+        rb_green.setButtonTintList(ColorStateList.valueOf(Color.GREEN));
+        rb_blue.setButtonTintList(ColorStateList.valueOf(Color.BLUE));
 
         int outlineCol = SP.getInt("outlineColor",0);
+
+        /*Log.d(TAG, "SP: "+outlineCol);
+
+        Log.d(TAG, "C"+Color.RED+" "+Color.GREEN+" "+Color.BLUE);
+        Log.d(TAG, "R"+getColor(R.color.red)+" "+getColor(R.color.green)+" "+getColor(R.color.blue));
+        Log.d(TAG, "O"+Objects.requireNonNull(rb_red.getButtonTintList()).getDefaultColor()+
+                " "+ Objects.requireNonNull(rb_green.getButtonTintList()).getDefaultColor()+
+                " "+ Objects.requireNonNull(rb_blue.getButtonTintList()).getDefaultColor());*/
+
         switch(outlineCol) {
             case Color.RED:
+                Log.d(TAG, "check red");
                 radioGroup.check(R.id.radioButton_red);
                 break;
             case Color.GREEN:
+                Log.d(TAG, "check green");
                 radioGroup.check(R.id.radioButton_green);
                 break;
             case Color.BLUE:
+                Log.d(TAG, "check blue");
                 radioGroup.check(R.id.radioButton_blue);
                 break;
         }
 
-
-
-            ConfigRecyclerView.setOnClickListener(new View.OnClickListener() {
+        ConfigRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -84,7 +95,6 @@ public class ConfigActivity extends WearableActivity {
 
             }
         });
-
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {

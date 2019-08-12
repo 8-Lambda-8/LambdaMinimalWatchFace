@@ -78,19 +78,19 @@
                 android:id="@+id/radioButton_red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/red" />
+                android:buttonTint="#FF0000" />
 
             <RadioButton
                 android:id="@+id/radioButton_green"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/green" />
+                android:buttonTint="#00FF00" />
 
             <RadioButton
                 android:id="@+id/radioButton_blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/dark_blue" />
+                android:buttonTint="#0000FF" />
 
             <!--<RadioButton
                 android:id="@+id/radioButton_magenta"
