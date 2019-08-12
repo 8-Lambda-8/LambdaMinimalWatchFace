@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.TAG;
+import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.update;
 
 /**
  * Set Akkzent color
@@ -104,6 +105,8 @@ public class ConfigActivity extends WearableActivity {
 
                 SP_E.putInt("outlineColor", Objects.requireNonNull(rb.getButtonTintList()).getDefaultColor());
                 SP_E.apply();
+                update = true;
+
             }
         });
 

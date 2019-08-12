@@ -51,6 +51,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
      */
     public static final String TAG = "XXX";
 
+    public static boolean update = false;
+
 
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
 
@@ -143,6 +145,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         //SharedPreferences.Editor SP_E;
 
 
+
+
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
@@ -207,7 +211,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             });*/
         }
 
-        private void initializeWatchFace() {
+        void initializeWatchFace() {
             /* Set defaults for colors */
 
 
@@ -274,6 +278,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onTimeTick() {
             super.onTimeTick();
             invalidate();
+            if(update){
+                initializeBackground();
+                initializeWatchFace();
+            }
         }
 
         @Override
