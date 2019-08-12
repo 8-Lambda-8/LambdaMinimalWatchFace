@@ -127,7 +127,8 @@ public class ConfigActivity extends WearableActivity {
         BTN_RemoveShortcut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                SP_E.putString("shortcutApp", "");
+                SP_E.apply();
             }
         });
 
