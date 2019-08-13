@@ -281,6 +281,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
             if(update){
                 initializeBackground();
                 initializeWatchFace();
+
+                update = false;
             }
         }
 
