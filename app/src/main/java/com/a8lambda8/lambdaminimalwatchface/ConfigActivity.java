@@ -6,8 +6,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PictureDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +21,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +41,7 @@ import static com.a8lambda8.lambdaminimalwatchface.MyWatchFace.update;
 public class ConfigActivity extends WearableActivity {
 
     public static final String MY_PREFS_NAME = "ConfigPrefs";
+    public static final String shortcutAppIconFileName = "shortcutAppIcon.png";
 
     SharedPreferences SP;
     SharedPreferences.Editor SP_E;
@@ -129,6 +141,9 @@ public class ConfigActivity extends WearableActivity {
             public void onClick(View v) {
                 SP_E.putString("shortcutApp", "");
                 SP_E.apply();
+
+
+
             }
         });
 
@@ -159,10 +174,25 @@ public class ConfigActivity extends WearableActivity {
 
                 IV_shortcut.setImageDrawable(result.loadIcon(pm));
 
-
                 //SP_E.p
                 SP_E.putString("shortcutApp", result.activityInfo.packageName);
                 SP_E.apply();
+
+                Bitmap bm = drawableToBitmap(result.loadIcon(pm));
+
+                OutputStream fOut = null;
+
+                try {
+                    fOut = new FileOutputStream(new File(getFilesDir()/*root*/, shortcutAppIconFileName));
+                } catch (Exception ignored){}
+
+                bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                assert fOut != null;
+
+                try {
+                    fOut.flush();
+                    fOut.close();
+                } catch (IOException ignored) {}
 
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -170,4 +200,11 @@ public class ConfigActivity extends WearableActivity {
             }
         }
     }//onActivityResult
+
+    public Bitmap drawableToBitmap(Drawable d) {
+        Bitmap bm = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+        d.draw(canvas);
+        return bm;
+    }
 }

@@ -1,19 +1,27 @@
 package com.a8lambda8.lambdaminimalwatchface;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
@@ -24,13 +32,19 @@ import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.a8lambda8.lambdaminimalwatchface.ConfigActivity.MY_PREFS_NAME;
+import static com.a8lambda8.lambdaminimalwatchface.ConfigActivity.shortcutAppIconFileName;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't
@@ -137,6 +151,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
 
+        private boolean shortcutIsSet;
+        private String shortcutAppPacketName = "notSet";
+        private Bitmap shortcutAppBitmap;
+
+        private Drawable shortcutAppDrawable;
+
         private float[] mBatPts;
         private Rect mBatRect;
 
@@ -190,6 +210,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     .setTimeRange(startTime, endTime)
                     .build();*/
 
+
+            Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+            shortcutAppBitmap = Bitmap.createBitmap(64, 64, conf);
 
         }
 
@@ -265,6 +288,28 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
             mDatumPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
             mBatteryPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mAccentColor);
+
+
+            //shortcut
+
+            shortcutAppPacketName = SP.getString("shortcutApp","notSet");
+            shortcutIsSet = !Objects.requireNonNull(shortcutAppPacketName).equals("notSet");
+
+            Log.d(TAG, "initializeWatchFace: "+shortcutAppPacketName);
+
+            if(shortcutIsSet){
+
+                File directory = getFilesDir();
+                File file = new File(directory, shortcutAppIconFileName);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                shortcutAppBitmap = BitmapFactory.decodeFile(file.getPath(), options);
+
+
+            }
+
+
 
         }
 
@@ -380,7 +425,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mCenterY = height / 2f;//-20;
 
 
-            createBatShape(width,height);
+            createBatShape(/*width,*/height);
 
             /*
              * Calculate lengths of different hands based on watch screen size.
@@ -412,7 +457,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }*/
         }
 
-        private void createBatShape(int width,int height){
+        private void createBatShape(/*int width,*/int height){
 
             Rect BatBounds = new Rect();
             mBatteryPaint.getTextBounds("100",0,3,BatBounds);
@@ -585,12 +630,29 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
                 canvas.drawText(DateFormat.format("EEdd.MM", mCalendar).toString(),mCenterX,55+mDatumPaint.getFontSpacing(),mDatumPaint);
 
+                canvas.restore();
+
                 //canvas.rotate(180,mCenterX,mCenterY);
 
                 //canvas.drawText(DateFormat.format("dd.MM", mCalendar).toString(),mCenterX,50+mDatumPaint.getFontSpacing(),mDatumPaint);
 
 
                 //TODO Add App Launcher
+
+                if(shortcutIsSet){
+
+                    //shortcutAppDrawable.draw();
+
+                    int x = (int)mCenterX+120;
+
+                    int y = (int)mCenterY;
+
+                    Rect r = new Rect(x,y-shortcutAppBitmap.getHeight()/2,x+shortcutAppBitmap.getWidth(),y+shortcutAppBitmap.getHeight()/2);
+
+                    //canvas.drawRect(r,mAccentPaint);
+                    canvas.drawBitmap(shortcutAppBitmap,new Rect(0,0,64,64),r,mDatumPaint);
+
+                }
 
 
             }//if mAmbient
