@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
@@ -122,13 +124,11 @@ public class ConfigActivity extends WearableActivity {
             @Override
             public void onClick(View v) {
 
-                Log.d(TAG,""+v);
-
                 Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
                 mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
                 List<ResolveInfo> pkgAppsList = pm.queryIntentActivities( mainIntent, 0);
 
-                Log.d(TAG,""+pkgAppsList);
+                //Log.d(TAG,""+pkgAppsList);
 
                 Intent i = new Intent(ConfigActivity.this, AppSelectorActivity.class);
                 i.putExtra("AppList",(ArrayList<ResolveInfo>)pkgAppsList);
@@ -186,8 +186,9 @@ public class ConfigActivity extends WearableActivity {
                     fOut = new FileOutputStream(new File(getFilesDir()/*root*/, shortcutAppIconFileName));
                 } catch (Exception ignored){}
 
-                bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
                 assert fOut != null;
+
+                bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
 
                 try {
                     fOut.flush();
@@ -202,9 +203,24 @@ public class ConfigActivity extends WearableActivity {
     }//onActivityResult
 
     public Bitmap drawableToBitmap(Drawable d) {
+
         Bitmap bm = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);
+
+        d.setBounds(0, 0, 125, 125);
         d.draw(canvas);
+
+        Paint P = new Paint();
+        P.setColor(Color.RED);
+        P.setStrokeWidth(10);
+
+        //canvas.drawRect(new Rect(),P);
+        //canvas.drawColor(Color.RED);
+
+        /*for(int i = 0;i<bm.getWidth();i++){
+            Log.d(TAG, "x="+i+" pixel="+bm.getPixel(i,10));
+        }*/
+
         return bm;
     }
 }
