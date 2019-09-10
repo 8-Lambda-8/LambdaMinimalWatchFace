@@ -1,13 +1,10 @@
 package com.a8lambda8.lambdaminimalwatchface;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,13 +12,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
@@ -32,17 +26,13 @@ import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.a8lambda8.lambdaminimalwatchface.ConfigActivity.MY_PREFS_NAME;
 import static com.a8lambda8.lambdaminimalwatchface.ConfigActivity.shortcutAppIconFileName;
 
@@ -155,8 +145,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private String shortcutAppPacketName = "notSet";
         private Bitmap shortcutAppBitmap;
 
-        private Drawable shortcutAppDrawable;
-
         private float[] mBatPts;
         private Rect mBatRect;
 
@@ -209,10 +197,25 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     .bucketByTime(1, TimeUnit.DAYS)
                     .setTimeRange(startTime, endTime)
                     .build();*/
+            shortcutAppPacketName = SP.getString("shortcutApp","notSet");
+            shortcutIsSet = !Objects.requireNonNull(shortcutAppPacketName).equals("notSet");
 
 
-            Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-            shortcutAppBitmap = Bitmap.createBitmap(64, 64, conf);
+
+            if(shortcutIsSet){
+
+                File directory = getFilesDir();
+                File file = new File(directory, shortcutAppIconFileName);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                shortcutAppBitmap = BitmapFactory.decodeFile(file.getPath(), options);
+
+            }else {
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                shortcutAppBitmap = Bitmap.createBitmap(64, 64, conf);
+            }
+
 
         }
 
@@ -306,10 +309,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 shortcutAppBitmap = BitmapFactory.decodeFile(file.getPath(), options);
 
-
             }
-
-
 
         }
 
@@ -632,25 +632,32 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
                 canvas.restore();
 
-                //canvas.rotate(180,mCenterX,mCenterY);
-
-                //canvas.drawText(DateFormat.format("dd.MM", mCalendar).toString(),mCenterX,50+mDatumPaint.getFontSpacing(),mDatumPaint);
-
 
                 //TODO Add App Launcher
 
                 if(shortcutIsSet){
 
-                    //shortcutAppDrawable.draw();
-
-                    int x = (int)mCenterX+120;
+                    int x = (int)mCenterX+100;
 
                     int y = (int)mCenterY;
 
                     Rect r = new Rect(x,y-shortcutAppBitmap.getHeight()/2,x+shortcutAppBitmap.getWidth(),y+shortcutAppBitmap.getHeight()/2);
 
                     //canvas.drawRect(r,mAccentPaint);
-                    canvas.drawBitmap(shortcutAppBitmap,new Rect(0,0,64,64),r,mDatumPaint);
+                    //canvas.drawBitmap(shortcutAppBitmap,new Rect(0,0,125,125),r,mDatumPaint);
+
+                    Paint paint = new Paint();
+                    paint.setAntiAlias(true);
+                    paint.setFilterBitmap(true);
+                    paint.setDither(true);
+
+                    Bitmap testBmp = shortcutAppBitmap;
+
+                    testBmp.getHeight();
+
+                    canvas.drawBitmap(shortcutAppBitmap,new Rect(0,0,shortcutAppBitmap.getWidth(),shortcutAppBitmap.getHeight()),r,paint);
+
+                    //canvas.drawBitmap(shortcutAppBitmap, x, y-shortcutAppBitmap.getHeight(),paint);
 
                 }
 
@@ -658,11 +665,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }//if mAmbient
 
 
-
-
             //float[] floats = new float[];
-
-
 
             //canvas.drawRect(bounds,mAccentPaint);
 
@@ -670,8 +673,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
 
             //canvas.drawText(DateFormat.format("'H'HH'M'mm'S'ss", mCalendar).toString(),mCenterX,yPos,mClockFirstPaint);
-
-
 
 
         }
