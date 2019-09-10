@@ -10,12 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.PictureDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -195,31 +190,28 @@ public class ConfigActivity extends WearableActivity {
                     fOut.close();
                 } catch (IOException ignored) {}
 
+                update = true;
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
+                Log.d(TAG, "onActivityResult: Activity.RESULT_CANCELED");
             }
         }
     }//onActivityResult
 
     public Bitmap drawableToBitmap(Drawable d) {
 
-        Bitmap bm = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bm);
+        Log.d(TAG, "drawableToBitmap: "+d.getIntrinsicWidth()+ " x "+d.getIntrinsicHeight());
 
-        d.setBounds(0, 0, 125, 125);
+        Bitmap bm = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+        /*canvas.save();
+        canvas.scale(0.5f,0.5f);*/
+        d.setBounds(0, 0, 64, 64);
         d.draw(canvas);
 
-        Paint P = new Paint();
-        P.setColor(Color.RED);
-        P.setStrokeWidth(10);
-
-        //canvas.drawRect(new Rect(),P);
-        //canvas.drawColor(Color.RED);
-
-        /*for(int i = 0;i<bm.getWidth();i++){
-            Log.d(TAG, "x="+i+" pixel="+bm.getPixel(i,10));
-        }*/
+        /*canvas.restore();*/
 
         return bm;
     }

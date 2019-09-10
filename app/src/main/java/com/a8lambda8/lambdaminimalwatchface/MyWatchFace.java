@@ -200,8 +200,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
             shortcutAppPacketName = SP.getString("shortcutApp","notSet");
             shortcutIsSet = !Objects.requireNonNull(shortcutAppPacketName).equals("notSet");
 
-
-
             if(shortcutIsSet){
 
                 File directory = getFilesDir();
