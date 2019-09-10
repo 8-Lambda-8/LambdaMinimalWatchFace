@@ -46,9 +46,9 @@ public class AppSelectorActivity extends WearableActivity {
         final PackageManager pm =  getApplication().getPackageManager();
 
 
-        for(ResolveInfo ri : pkgAppsList){
+        /*for(ResolveInfo ri : pkgAppsList){
             Log.d(TAG,""+ri.loadLabel(pm));
-        }
+        }*/
 
         // specify an adapter (see also next example)
         mAdapter = new ListAdapter_AppSelector(pkgAppsList,pm);
