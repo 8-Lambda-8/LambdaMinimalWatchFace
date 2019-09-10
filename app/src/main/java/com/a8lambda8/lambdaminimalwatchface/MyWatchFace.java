@@ -543,13 +543,16 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     // The user has started a different gesture or otherwise cancelled the tap.
                     break;
                 case TAP_TYPE_TAP:
-                    // The user has completed the tap gesture.
-                    // TODO: Add code to handle the tap gesture.
-                    /*Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-                            .show();*/
-                    int xArea = 20, yArea = 20;
 
-                    if( x<mCenterX+xArea
+                    if(shortcutRect.contains(x,y)){
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(shortcutAppPacketName);
+                        if (launchIntent != null) {
+                            startActivity(launchIntent);//null pointer check in case package name was not found
+                        }
+
+                    }
+
+                    /*if( x<mCenterX+xArea
                         &&
                         x>mCenterX-xArea
                         &&
@@ -557,10 +560,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
                         &&
                         y>0){
 
+                        Intent
+
                         Toast.makeText(getApplicationContext(), "Tapped "+x+":"+y, Toast.LENGTH_SHORT)
                                 .show();
 
-                    }
+                    }*/
 
                     break;
             }
